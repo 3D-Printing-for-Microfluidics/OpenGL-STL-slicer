@@ -42,7 +42,9 @@ def start_slicing_stl(stl_filename, layer_thickness, slice_save_path):
     
     loadMesh(stl_filename)
     glBindVertexArray(params.maskVAO)
-    sliceShader = OurShaderProgram('shaders/slice.vert', 'shaders/slice.frag')
+    slicer_folder = os.path.dirname(os.path.abspath(__file__))
+    sliceShader = OurShaderProgram(os.path.join(slicer_folder, 'shaders', 'slice.vert'), 
+                                   os.path.join(slicer_folder, 'shaders', 'slice.frag'))
     prepareSlice()
     
     i, height = 0, 0.
