@@ -13,7 +13,7 @@ import util
 
 EPSILON = 0.0001
 SCR_WIDTH = 500
-SCR_HEIGHT = 500
+SCR_HEIGHT = int(SCR_WIDTH * printer.resolution_y / printer.resolution_x)
 
 class params:
     VAO, vertVBO, maskVAO, maskVBO = 0, 0, 0, 0
