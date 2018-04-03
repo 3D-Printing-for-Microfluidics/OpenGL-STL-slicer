@@ -2,6 +2,12 @@
 
 Slice STL files to black-and-white png images that are used in stereolithographic 3D printer.
 
+## Dependency
+
+Make sure [glfw](http://www.glfw.org/download.html) is installed. Mac users can use `brew` to install it. 
+
+## Usage
+
 Change resolution and pixel pitch in `printer.py`, accordingly.
 
 ```
