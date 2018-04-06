@@ -26,7 +26,7 @@
 GLfloat layer;
 
 const unsigned int SCR_WIDTH = 500;
-const unsigned int SCR_HEIGHT = 500;
+const unsigned int SCR_HEIGHT = int(SCR_WIDTH * float(printer_resolution.y) / float(printer_resolution.x));
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);

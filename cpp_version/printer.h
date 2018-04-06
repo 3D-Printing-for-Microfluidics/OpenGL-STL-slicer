@@ -7,7 +7,7 @@ struct Resolution
     const unsigned int x, y;
 };
 
-Resolution printer_resolution(500, 500);
-const GLfloat pixel = 0.05; // pixel pitch (um)
+Resolution printer_resolution(2560, 1600);
+const GLfloat pixel = 0.0076; // pixel pitch (um)
 
 #endif
