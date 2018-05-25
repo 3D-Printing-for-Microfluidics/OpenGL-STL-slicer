@@ -1,0 +1,6 @@
+numpy==1.14.3
+numpy-stl==2.5.0
+PyQt5==5.10.1
+python-utils==2.3.0
+sip==4.19.8
+six==1.11.0

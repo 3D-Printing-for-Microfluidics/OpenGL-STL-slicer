@@ -1,5 +1,5 @@
 class printer:
-    resolution_x = 500
-    resolution_y = 500
+    width = 500
+    height = 500
     pixel = 0.05
 
