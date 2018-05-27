@@ -26,15 +26,6 @@ class Window(QtGui.QOpenGLWindow):
                  
         super().__init__(*args, **kwargs)
         
-        # Make sure to set the Surface Format in `__init__`.
-        # Otherwise, it won't work.
-        format = QtGui.QSurfaceFormat()
-        format.setRenderableType(QtGui.QSurfaceFormat.OpenGL)
-        format.setProfile(QtGui.QSurfaceFormat.CoreProfile)
-        format.setVersion(4, 1)
-        format.setStencilBufferSize(8)
-        self.setFormat(format)
-        
         self.setTitle('STL Slicer')
         
         self.vertVAO, self.vertVBO = 0, 0
@@ -238,6 +229,17 @@ def main():
     sliceSavePath = os.path.join(temp, 'slices')
     if not os.path.exists(sliceSavePath):
         os.mkdir(sliceSavePath)
+        
+    # Set format here, otherwise it throws error
+    # `QCocoaGLContext: Falling back to unshared context.`
+    # on Mac when use QOpenGLWidgets
+    # https://doc.qt.io/qt-5/qopenglwidget.html#details last paragraph
+    format = QtGui.QSurfaceFormat()
+    format.setRenderableType(QtGui.QSurfaceFormat.OpenGL)
+    format.setProfile(QtGui.QSurfaceFormat.CoreProfile)
+    format.setVersion(4, 1)
+    format.setStencilBufferSize(8)
+    QtGui.QSurfaceFormat.setDefaultFormat(format)
         
     app = QtWidgets.QApplication(sys.argv)
     window = Window(sltFilename, layerThickness, sliceSavePath)
