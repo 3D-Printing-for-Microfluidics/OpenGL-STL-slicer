@@ -16,12 +16,14 @@ Change resolution and pixel pitch in `printer.py`, accordingly.
 Using `app_qt.py` is recommended, because it is about twice as fast as using `app_pyopengl.py`, and it has less dependencies. 
 
 ```
+$ cd pyqt5
 $ python app_qt.py <stl file> <layer thickness in mm>
 ```
 
 or
 
 ```
+$ cd pyopengl
 $ python app_pyopengl.py <stl file> <layer thickness in mm>
 ```
 
