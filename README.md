@@ -15,11 +15,11 @@ Steps:
 
 ## Install Python Anaconda
 
-Follow the installation instructions found <b>[here](https://conda.io/docs/user-guide/install/windows.html)</b>. Be sure to get Python 3.7.3. Be sure to check the box to add it to your path.
+Follow the installation instructions found <b>[here](https://www.anaconda.com/distribution/)</b>. Be sure to get Python 3.7.3. Be sure to check the box to add it to your path.
 
 ## Create and Activate Virtual Environment
 
-In a shell of your coice:
+In a shell of your choice:
 
 ```
 # install virtualenv
@@ -41,6 +41,6 @@ When you want to use the slicer, you will have to activate the virtual environme
 python slicer_gui.py
 ```
 
-# Acknowlegement
+# Acknowledgement
 
-The algorithm used here is from [Matt Keeter](https://github.com/mkeeter). Here are his [Javascript version](https://github.com/Formlabs/hackathon-slicer) and his [explanation](http://www.mattkeeter.com/projects/dlp/).
+The algorithm used here is from [Matt Keeter](https://github.com/mkeeter). Here are his [JavaScript version](https://github.com/Formlabs/hackathon-slicer) and his [explanation](http://www.mattkeeter.com/projects/dlp/).
