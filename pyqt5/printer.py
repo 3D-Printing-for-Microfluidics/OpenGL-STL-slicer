@@ -1,5 +1,4 @@
 class printer:
-    width = 500
-    height = 500
-    pixel = 0.05
-
+    width = 2560
+    height = 1600
+    pixel = 0.0076

@@ -14,20 +14,21 @@ EPSILON = 0.00001
 SCR_WIDTH = 640
 SCR_HEIGHT = int(SCR_WIDTH * printer.height / printer.width)
 
+app = None
 
 class Window(QtGui.QOpenGLWindow):
-    
-    def __init__(self, 
-                 sltFilename, 
-                 layerThickness, 
-                 sliceSavePath, 
-                 *args, 
+
+    def __init__(self,
+                 stlFilename,
+                 layerThickness,
+                 sliceSavePath,
+                 *args,
                  **kwargs):
-                 
+
         super().__init__(*args, **kwargs)
-        
+
         self.setTitle('STL Slicer')
-        
+
         self.vertVAO, self.vertVBO = 0, 0
         self.maskVAO, self.maskVBO = 0, 0
         self.numOfVerts = 0
@@ -35,14 +36,14 @@ class Window(QtGui.QOpenGLWindow):
         self.totalThickness = 0.
         self.currentLayer = 0
         self.height = 0
-        
-        self.sltFilename = sltFilename
+
+        self.stlFilename = stlFilename
         self.layerThickness = layerThickness
         self.sliceSavePath = sliceSavePath
-        
+
     def initializeGL(self):
         self.gl = self.context().versionFunctions()
-        
+
         self.shaderProg = QtGui.QOpenGLShaderProgram()
         self.shaderProg.create()
         self.shaderProg.addShaderFromSourceFile(
@@ -50,19 +51,19 @@ class Window(QtGui.QOpenGLWindow):
         self.shaderProg.addShaderFromSourceFile(
             QtGui.QOpenGLShader.Fragment, 'shaders/slice.frag')
         self.shaderProg.link()
-        
+
         self.loadMesh()
-        
+
         self.proj = QtGui.QMatrix4x4()
         self.proj.setToIdentity()
-        self.proj.ortho(0, printer.width*printer.pixel, 
-                        0, printer.height*printer.pixel, 
+        self.proj.ortho(0, printer.width*printer.pixel,
+                        0, printer.height*printer.pixel,
                         -self.totalThickness, self.totalThickness)
-                   
+
         self.model = QtGui.QMatrix4x4()
         self.model.setToIdentity()
         self.model.translate(0, 0, self.totalThickness+EPSILON)
-        
+
         self.sliceFbo = QtGui.QOpenGLFramebufferObject(
             printer.width,
             printer.height
@@ -70,10 +71,10 @@ class Window(QtGui.QOpenGLWindow):
         self.sliceFbo.setAttachment(
             QtGui.QOpenGLFramebufferObject.CombinedDepthStencil
         )
-        
+
     def loadMesh(self):
         # Get information about our mesh
-        ourMesh = mesh.Mesh.from_file(self.sltFilename)
+        ourMesh = mesh.Mesh.from_file(self.stlFilename)
         self.numOfVerts = ourMesh.vectors.shape[0] * 3
         self.bounds = {
             'xmin': np.min(ourMesh.vectors[:,:,0]),
@@ -90,62 +91,62 @@ class Window(QtGui.QOpenGLWindow):
         self.vertVAO = QtGui.QOpenGLVertexArrayObject()
         self.vertVAO.create()
         self.vertVAO.bind()
-    
+
         self.vertVBO = QtGui.QOpenGLBuffer(QtGui.QOpenGLBuffer.VertexBuffer)
         self.vertVBO.create()
         self.vertVBO.bind()
         self.vertVBO.setUsagePattern(QtGui.QOpenGLBuffer.StaticDraw)
         data = ourMesh.vectors.astype(GLfloat).tostring()
         self.vertVBO.allocate(data, len(data))
-        self.gl.glVertexAttribPointer(0, 3, self.gl.GL_FLOAT, 
+        self.gl.glVertexAttribPointer(0, 3, self.gl.GL_FLOAT,
             self.gl.GL_FALSE, 3*sizeof(GLfloat), 0)
         self.gl.glEnableVertexAttribArray(0)
-    
+
         self.vertVBO.release()
         self.vertVAO.release()
         #######################################
-    
+
         # a mask vertex array for stencil buffer to subtract
         maskVert = np.array(
             [[0, 0, 0],
              [printer.width*printer.pixel, 0, 0],
              [printer.width*printer.pixel, printer.height*printer.pixel, 0],
-     
+
              [0, 0, 0],
              [printer.width*printer.pixel, printer.height*printer.pixel, 0],
              [0, printer.height*printer.pixel, 0]], dtype=GLfloat
         )
-    
+
         #######################################
         # make VAO for drawing mask
         self.maskVAO = QtGui.QOpenGLVertexArrayObject()
         self.maskVAO.create()
         self.maskVAO.bind()
-        
+
         self.maskVBO = QtGui.QOpenGLBuffer(QtGui.QOpenGLBuffer.VertexBuffer)
         self.maskVBO.create()
         self.maskVBO.bind()
         self.maskVBO.setUsagePattern(QtGui.QOpenGLBuffer.StaticDraw)
         data = maskVert.tostring()
         self.maskVBO.allocate(data, len(data))
-        self.gl.glVertexAttribPointer(0, 3, self.gl.GL_FLOAT, 
+        self.gl.glVertexAttribPointer(0, 3, self.gl.GL_FLOAT,
             self.gl.GL_FALSE, 3*sizeof(GLfloat), 0)
         self.gl.glEnableVertexAttribArray(0)
-        
+
         self.maskVBO.release()
         self.maskVAO.release()
         #######################################
-        
+
     def paintGL(self):
         if self.height >= self.totalThickness-EPSILON:
-            sys.exit()
+            app.exit(0)
         else:
             self.height += self.layerThickness
             self.currentLayer += 1
             self.draw()
             self.renderSlice()
             self.update()
-        
+
     def draw(self):
         self.gl.glViewport(0, 0, self.size().width(), self.size().height())
         self.gl.glEnable(self.gl.GL_STENCIL_TEST)
@@ -153,11 +154,11 @@ class Window(QtGui.QOpenGLWindow):
         self.gl.glClear(self.gl.GL_COLOR_BUFFER_BIT | self.gl.GL_STENCIL_BUFFER_BIT)
         self.vertVAO.bind()
         self.shaderProg.bind()
-        
+
         self.model.translate(0, 0, -self.layerThickness)
         self.shaderProg.setUniformValue('proj', self.proj)
         self.shaderProg.setUniformValue('model', self.model)
-        
+
         self.gl.glEnable(self.gl.GL_CULL_FACE)
         self.gl.glCullFace(self.gl.GL_FRONT)
         self.gl.glStencilFunc(self.gl.GL_ALWAYS, 0, 0xFF)
@@ -176,7 +177,7 @@ class Window(QtGui.QOpenGLWindow):
         self.gl.glDrawArrays(self.gl.GL_TRIANGLES, 0, 6)
         self.gl.glDisable(self.gl.GL_STENCIL_TEST)
         self.shaderProg.release()
-        
+
     def renderSlice(self):
         self.sliceFbo.bind()
         self.gl.glViewport(0, 0, printer.width, printer.height)
@@ -185,10 +186,10 @@ class Window(QtGui.QOpenGLWindow):
         self.gl.glClear(self.gl.GL_COLOR_BUFFER_BIT | self.gl.GL_STENCIL_BUFFER_BIT)
         self.vertVAO.bind()
         self.shaderProg.bind()
-        
+
         self.shaderProg.setUniformValue('proj', self.proj)
         self.shaderProg.setUniformValue('model', self.model)
-        
+
         self.gl.glEnable(self.gl.GL_CULL_FACE)
         self.gl.glCullFace(self.gl.GL_FRONT)
         self.gl.glStencilFunc(self.gl.GL_ALWAYS, 0, 0xFF)
@@ -206,7 +207,7 @@ class Window(QtGui.QOpenGLWindow):
         self.gl.glStencilOp(self.gl.GL_KEEP, self.gl.GL_KEEP, self.gl.GL_KEEP)
         self.gl.glDrawArrays(self.gl.GL_TRIANGLES, 0, 6)
         self.gl.glDisable(self.gl.GL_STENCIL_TEST)
-        
+
         image = self.sliceFbo.toImage()
         # makes a QComboBox for different Image Format,
         # namely Format_Mono, Format_MonoLSB, and Format_Grayscale8
@@ -214,62 +215,43 @@ class Window(QtGui.QOpenGLWindow):
         image.save(os.path.join(self.sliceSavePath,
                                 'out{:04d}.png'.format(self.currentLayer)))
         self.sliceFbo.release()
-        
+
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Escape:
-            sys.exit()
+            app.exit(0)
         event.accept()
 
 
-def main():
-    
-    sltFilename = sys.argv[1]
-    layerThickness = float(sys.argv[2])
-    temp = os.path.dirname(sltFilename)
-    sliceSavePath = os.path.join(temp, 'slices')
+def generate_slices(stlFilename, layerThickness):
+    stlParentFolder = os.path.dirname(stlFilename)
+    sliceSavePath = os.path.join(stlParentFolder, 'slices')
+
     if not os.path.exists(sliceSavePath):
         os.mkdir(sliceSavePath)
-        
+
     # Set format here, otherwise it throws error
     # `QCocoaGLContext: Falling back to unshared context.`
     # on Mac when use QOpenGLWidgets
     # https://doc.qt.io/qt-5/qopenglwidget.html#details last paragraph
-    format = QtGui.QSurfaceFormat()
-    format.setRenderableType(QtGui.QSurfaceFormat.OpenGL)
-    format.setProfile(QtGui.QSurfaceFormat.CoreProfile)
-    format.setVersion(4, 1)
-    format.setStencilBufferSize(8)
-    QtGui.QSurfaceFormat.setDefaultFormat(format)
-        
+    custom_format = QtGui.QSurfaceFormat()
+    custom_format.setRenderableType(QtGui.QSurfaceFormat.OpenGL)
+    custom_format.setProfile(QtGui.QSurfaceFormat.CoreProfile)
+    custom_format.setVersion(4, 1)
+    custom_format.setStencilBufferSize(8)
+    QtGui.QSurfaceFormat.setDefaultFormat(custom_format)
+
+    global app
     app = QtWidgets.QApplication(sys.argv)
-    window = Window(sltFilename, layerThickness, sliceSavePath)
+    window = Window(stlFilename, layerThickness, sliceSavePath)
     window.resize(SCR_WIDTH, SCR_HEIGHT)
     window.show()
-    
-    sys.exit(app.exec_())
+
+    app.exec_()
+    # return sliceSavePath, sys.exit(app.exec_())
+    return sliceSavePath
 
 
 if __name__ == '__main__':
-    main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    stlFilename = sys.argv[1]
+    layerThickness = float(sys.argv[2])
+    generate_slices(stlFilename, layerThickness)
