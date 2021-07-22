@@ -16,6 +16,7 @@ SCR_HEIGHT = int(SCR_WIDTH * printer.height / printer.width)
 
 app = None
 
+
 class Window(QtGui.QOpenGLWindow):
 
     def __init__(self,
@@ -77,12 +78,12 @@ class Window(QtGui.QOpenGLWindow):
         ourMesh = mesh.Mesh.from_file(self.stlFilename)
         self.numOfVerts = ourMesh.vectors.shape[0] * 3
         self.bounds = {
-            'xmin': np.min(ourMesh.vectors[:,:,0]),
-            'xmax': np.max(ourMesh.vectors[:,:,0]),
-            'ymin': np.min(ourMesh.vectors[:,:,1]),
-            'ymax': np.max(ourMesh.vectors[:,:,1]),
-            'zmin': np.min(ourMesh.vectors[:,:,2]),
-            'zmax': np.max(ourMesh.vectors[:,:,2])
+            'xmin': np.min(ourMesh.vectors[:, :, 0]),
+            'xmax': np.max(ourMesh.vectors[:, :, 0]),
+            'ymin': np.min(ourMesh.vectors[:, :, 1]),
+            'ymax': np.max(ourMesh.vectors[:, :, 1]),
+            'zmin': np.min(ourMesh.vectors[:, :, 2]),
+            'zmax': np.max(ourMesh.vectors[:, :, 2])
         }
         self.totalThickness = self.bounds['zmax'] - self.bounds['zmin']
 
@@ -96,10 +97,10 @@ class Window(QtGui.QOpenGLWindow):
         self.vertVBO.create()
         self.vertVBO.bind()
         self.vertVBO.setUsagePattern(QtGui.QOpenGLBuffer.StaticDraw)
-        data = ourMesh.vectors.astype(GLfloat).tostring()
+        data = ourMesh.vectors.astype(GLfloat).tobytes()
         self.vertVBO.allocate(data, len(data))
         self.gl.glVertexAttribPointer(0, 3, self.gl.GL_FLOAT,
-            self.gl.GL_FALSE, 3*sizeof(GLfloat), 0)
+                                      self.gl.GL_FALSE, 3*sizeof(GLfloat), 0)
         self.gl.glEnableVertexAttribArray(0)
 
         self.vertVBO.release()
@@ -127,10 +128,10 @@ class Window(QtGui.QOpenGLWindow):
         self.maskVBO.create()
         self.maskVBO.bind()
         self.maskVBO.setUsagePattern(QtGui.QOpenGLBuffer.StaticDraw)
-        data = maskVert.tostring()
+        data = maskVert.tobytes()
         self.maskVBO.allocate(data, len(data))
         self.gl.glVertexAttribPointer(0, 3, self.gl.GL_FLOAT,
-            self.gl.GL_FALSE, 3*sizeof(GLfloat), 0)
+                                      self.gl.GL_FALSE, 3*sizeof(GLfloat), 0)
         self.gl.glEnableVertexAttribArray(0)
 
         self.maskVBO.release()
@@ -151,7 +152,8 @@ class Window(QtGui.QOpenGLWindow):
         self.gl.glViewport(0, 0, self.size().width(), self.size().height())
         self.gl.glEnable(self.gl.GL_STENCIL_TEST)
         self.gl.glClearColor(0., 0., 0., 1.)
-        self.gl.glClear(self.gl.GL_COLOR_BUFFER_BIT | self.gl.GL_STENCIL_BUFFER_BIT)
+        self.gl.glClear(self.gl.GL_COLOR_BUFFER_BIT |
+                        self.gl.GL_STENCIL_BUFFER_BIT)
         self.vertVAO.bind()
         self.shaderProg.bind()
 
@@ -183,7 +185,8 @@ class Window(QtGui.QOpenGLWindow):
         self.gl.glViewport(0, 0, printer.width, printer.height)
         self.gl.glEnable(self.gl.GL_STENCIL_TEST)
         self.gl.glClearColor(0., 0., 0., 1.)
-        self.gl.glClear(self.gl.GL_COLOR_BUFFER_BIT | self.gl.GL_STENCIL_BUFFER_BIT)
+        self.gl.glClear(self.gl.GL_COLOR_BUFFER_BIT |
+                        self.gl.GL_STENCIL_BUFFER_BIT)
         self.vertVAO.bind()
         self.shaderProg.bind()
 
