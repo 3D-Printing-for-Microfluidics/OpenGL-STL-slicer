@@ -1,13 +1,15 @@
-base = [15, 10, 0.01];
-top = [2, 1, 0.01];
+cube_thickness = 0.01;
+base = [15, 10, cube_thickness];
+top = [2, 1, cube_thickness];
 
+pyramid_height = 5;
+shift_top_x = 3;
+shift_top_y = 2;
 
 hull() {
     cube(base);
-    translate([1, 1, 5]) cube(top);
+    translate([shift_top_x, 
+               shift_top_y, 
+               pyramid_height - cube_thickness
+              ]) cube(top);
 }
-
-//hull() {
-//cube(base);
-//color("blue") translate([(base[0]-top[0])/2, (base[1]-top[1])/2, 5]) cube(top);
-//}
