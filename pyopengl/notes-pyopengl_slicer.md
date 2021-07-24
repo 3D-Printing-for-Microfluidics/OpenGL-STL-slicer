@@ -34,6 +34,6 @@ Run app:
 Fix deprecated methods:
 
     (anaconda_py38)
-    $ python app_pyopengl.py ../example.stl 0.1
+    $ python app_pyopengl.py ../example-pyramid.stl 0.5
 
 Everything seems to work fine.
