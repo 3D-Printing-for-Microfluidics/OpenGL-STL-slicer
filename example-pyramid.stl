@@ -6,39 +6,39 @@ solid OpenSCAD_Model
       vertex 3 3 5
     endloop
   endfacet
-  facet normal 0 1 0
+  facet normal -1 -0 0
     outer loop
-      vertex 0 10 0
-      vertex 0 10 0.01
-      vertex 15 10 0
+      vertex 0 10 2
+      vertex 0 0 0
+      vertex 0 0 2
     endloop
   endfacet
   facet normal 1 0 0
     outer loop
       vertex 15 0 0
       vertex 15 10 0
-      vertex 15 0 0.01
+      vertex 15 0 2
     endloop
   endfacet
-  facet normal 0 -0.92822 0.372032
+  facet normal 0 -0.83205 0.5547
     outer loop
-      vertex 15 0 0.01
+      vertex 15 0 2
       vertex 5 2 5
-      vertex 0 0 0.01
+      vertex 0 0 2
     endloop
   endfacet
-  facet normal 0 1 -0
+  facet normal 0.287348 0 0.957826
     outer loop
-      vertex 15 10 0
-      vertex 0 10 0.01
-      vertex 15 10 0.01
-    endloop
-  endfacet
-  facet normal 0 0.580468 0.814283
-    outer loop
+      vertex 15 10 2
       vertex 5 3 5
-      vertex 0 10 0.01
+      vertex 15 0 2
+    endloop
+  endfacet
+  facet normal -0.707107 0 0.707107
+    outer loop
+      vertex 3 2 5
       vertex 3 3 5
+      vertex 0 0 2
     endloop
   endfacet
   facet normal 0 0 -1
@@ -46,6 +46,34 @@ solid OpenSCAD_Model
       vertex 0 0 0
       vertex 15 10 0
       vertex 15 0 0
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex 0 10 0
+      vertex 0 0 0
+      vertex 0 10 2
+    endloop
+  endfacet
+  facet normal -0 0.393919 0.919145
+    outer loop
+      vertex 3 3 5
+      vertex 5 3 5
+      vertex 0 10 2
+    endloop
+  endfacet
+  facet normal 0 -0.83205 0.5547
+    outer loop
+      vertex 0 0 2
+      vertex 5 2 5
+      vertex 3 2 5
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 0 10 2
+      vertex 15 10 0
+      vertex 0 10 0
     endloop
   endfacet
   facet normal 0 0 -1
@@ -55,60 +83,46 @@ solid OpenSCAD_Model
       vertex 0 0 0
     endloop
   endfacet
-  facet normal 0.446498 0 0.894785
-    outer loop
-      vertex 15 10 0.01
-      vertex 5 3 5
-      vertex 15 0 0.01
-    endloop
-  endfacet
-  facet normal 0 -0.92822 0.372032
-    outer loop
-      vertex 0 0 0.01
-      vertex 5 2 5
-      vertex 3 2 5
-    endloop
-  endfacet
-  facet normal -0.857038 0 0.515253
-    outer loop
-      vertex 3 2 5
-      vertex 0 10 0.01
-      vertex 0 0 0.01
-    endloop
-  endfacet
-  facet normal -0.857038 0 0.515253
-    outer loop
-      vertex 3 3 5
-      vertex 0 10 0.01
-      vertex 3 2 5
-    endloop
-  endfacet
   facet normal 0 -1 -0
     outer loop
-      vertex 15 0 0.01
+      vertex 15 0 2
       vertex 0 0 0
       vertex 15 0 0
     endloop
   endfacet
   facet normal 0 -1 0
     outer loop
-      vertex 0 0 0.01
+      vertex 0 0 2
       vertex 0 0 0
-      vertex 15 0 0.01
+      vertex 15 0 2
     endloop
   endfacet
-  facet normal 0 0.580468 0.814283
+  facet normal 0 1 0
     outer loop
-      vertex 15 10 0.01
-      vertex 0 10 0.01
-      vertex 5 3 5
+      vertex 15 10 2
+      vertex 15 10 0
+      vertex 0 10 2
     endloop
   endfacet
   facet normal 1 -0 0
     outer loop
-      vertex 15 0 0.01
+      vertex 15 0 2
       vertex 15 10 0
-      vertex 15 10 0.01
+      vertex 15 10 2
+    endloop
+  endfacet
+  facet normal -0 0.393919 0.919145
+    outer loop
+      vertex 0 10 2
+      vertex 5 3 5
+      vertex 15 10 2
+    endloop
+  endfacet
+  facet normal -0.707107 0 0.707107
+    outer loop
+      vertex 0 0 2
+      vertex 3 3 5
+      vertex 0 10 2
     endloop
   endfacet
   facet normal 0 -0 1
@@ -118,25 +132,11 @@ solid OpenSCAD_Model
       vertex 3 2 5
     endloop
   endfacet
-  facet normal 0.446498 0 0.894785
+  facet normal 0.287348 0 0.957826
     outer loop
-      vertex 15 0 0.01
+      vertex 15 0 2
       vertex 5 3 5
       vertex 5 2 5
-    endloop
-  endfacet
-  facet normal -1 0 0
-    outer loop
-      vertex 0 0 0
-      vertex 0 10 0.01
-      vertex 0 10 0
-    endloop
-  endfacet
-  facet normal -1 0 0
-    outer loop
-      vertex 0 0 0.01
-      vertex 0 10 0.01
-      vertex 0 0 0
     endloop
   endfacet
 endsolid OpenSCAD_Model
