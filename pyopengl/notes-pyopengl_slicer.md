@@ -60,3 +60,11 @@ Effect: window displays and is uniformly & unchangingly black.
     # glfw.poll_events()
     
 Same as 2 above the first time I tried it, but then every other time no window appeared.
+
+## Next
+
+- Copy this directory and do the following in the new directory:
+    - Strip out all of the display code.
+    - Use a pysimplegui interface with tqdm progress bar instead of showing slices as they are created.
+    - Or do a terminal tqdm progress bar?
+- Can the PyQt slicer have the displayed slices suppressed and show a tqdm progress bar instead?
