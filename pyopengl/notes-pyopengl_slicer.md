@@ -37,3 +37,26 @@ Fix deprecated methods:
     $ python app_pyopengl.py ../example-pyramid.stl 0.5
 
 Everything seems to work fine.
+
+---
+# 7/24/21
+
+## How prevent OpenGL window from displaying?
+
+1 - Comment out line 60: 
+
+    # draw(sliceShader, height-EPSILON)  
+     
+Effect: window displays and flashes red fill color.
+
+2 - Also comment out line 64:
+
+    # glfw.swap_buffers(window)
+    
+Effect: window displays and is uniformly & unchangingly black.
+
+3 - Also comment out line 65:
+
+    # glfw.poll_events()
+    
+Same as 2 above the first time I tried it, but then every other time no window appeared.

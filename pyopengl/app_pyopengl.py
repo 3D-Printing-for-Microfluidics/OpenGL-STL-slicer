@@ -81,12 +81,12 @@ def loadMesh(stl):
     our_mesh = mesh.Mesh.from_file(stl)
     params.num_of_verts = our_mesh.vectors.shape[0] * 3
     params.bounds = {
-        'xmin': np.min(our_mesh.vectors[:, :, 0]),
-        'xmax': np.max(our_mesh.vectors[:, :, 0]),
-        'ymin': np.min(our_mesh.vectors[:, :, 1]),
-        'ymax': np.max(our_mesh.vectors[:, :, 1]),
-        'zmin': np.min(our_mesh.vectors[:, :, 2]),
-        'zmax': np.max(our_mesh.vectors[:, :, 2])
+        'xmin': our_mesh.min_[0],
+        'xmax': our_mesh.max_[0],
+        'ymin': our_mesh.min_[1],
+        'ymax': our_mesh.max_[1],
+        'zmin': our_mesh.min_[2],
+        'zmax': our_mesh.max_[2]
     }
     params.total_thickness = params.bounds['zmax'] - params.bounds['zmin']
 
