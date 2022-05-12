@@ -332,8 +332,24 @@ def dice_images(
                 if y == 0:
                     continue
                 sub_img = img[last_y:y, last_x:x]
+
+                # pad image
+                img_width = x - last_x
+                img_height = y - last_y
+                pad_x = 2560 - img_width
+                pad_y = 1600 - img_height
+                sub_img = np.pad(
+                    sub_img,
+                    (
+                        (pad_y // 2, pad_y - (pad_y // 2)),
+                        (pad_x // 2, pad_x - (pad_x // 2)),
+                    ),
+                )
+
                 sub_img = Image.fromarray(sub_img).convert("L")
-                sub_img.save(dicedSavePath / f"{filename}_stitch_x{j}_y{k}{extention}")
+                sub_img.save(
+                    dicedSavePath / f"{filename}_stitch_x{j-1}_y{k-1}{extention}"
+                )
                 last_y = y - overlap
             last_x = x - overlap
 
