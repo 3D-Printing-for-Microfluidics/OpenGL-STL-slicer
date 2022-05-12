@@ -1,10 +1,9 @@
 import sys
 import numpy as np
 from stl import mesh
+from pathlib import Path
 from PyQt5 import QtGui, QtCore, QtWidgets
 from ctypes import c_float, c_uint, sizeof
-import os
-from printer import printer
 
 GLfloat = c_float
 GLuint = c_uint
@@ -231,8 +230,9 @@ class Window(QtGui.QOpenGLWindow):
         # makes a QComboBox for different Image Format,
         # namely Format_Mono, Format_MonoLSB, and Format_Grayscale8
         image = image.convertToFormat(QtGui.QImage.Format_Grayscale8)
-        image.save(os.path.join(self.sliceSavePath,
-                                'out{:04d}.png'.format(self.currentLayer)))
+        fullpath = Path(self.sliceSavePath) / "out{:04d}.png".format(self.currentLayer)
+
+        image.save(str(fullpath))
         self.sliceFbo.release()
 
     def keyPressEvent(self, event):
@@ -241,12 +241,14 @@ class Window(QtGui.QOpenGLWindow):
         event.accept()
 
 
-def generate_slices(stlFilename, layerThickness, imageWidth, imageHeight, pixelPitch):
-    stlParentFolder = os.path.dirname(stlFilename)
-    sliceSavePath = os.path.join(stlParentFolder, 'slices')
+def generate_slices(
+    stlFilename, layerThickness, imageWidth, imageHeight, pixelPitch
+):
+    stlParentFolder = Path(stlFilename).parent
+    sliceSavePath = Path(stlParentFolder) / "slices"
 
-    if not os.path.exists(sliceSavePath):
-        os.mkdir(sliceSavePath)
+    if not Path(sliceSavePath).exists():
+        Path(sliceSavePath).mkdir()
 
     # Set format here, otherwise it throws error
     # `QCocoaGLContext: Falling back to unshared context.`

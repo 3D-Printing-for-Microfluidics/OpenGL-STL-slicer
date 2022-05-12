@@ -71,10 +71,16 @@ while True:
         path_to_stl = os.path.normpath(values["path"])
 
         # create the print file and then exit
-        output_folder = generate_slices(path_to_stl, layer_thickness_um/1000, width, height, pixel_pitch_um/1000)
+        output_folder = generate_slices(
+            path_to_stl,
+            layer_thickness_um / 1000,
+            width,
+            height,
+            pixel_pitch_um / 1000,
+            progress_handle,
+        )
 
-        sg.popup('Slices saved to', output_folder, title='Slicing Complete')
-
+        sg.popup("Slices saved to", output_folder, title="Slicing Complete")
 
         window.close()
     elif event == "adv_opts":
