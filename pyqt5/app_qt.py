@@ -5,6 +5,7 @@ import numpy as np
 from stl import mesh
 from PIL import Image
 from pathlib import Path
+from printer import printer
 from PyQt5 import QtGui, QtCore, QtWidgets
 from ctypes import c_float, c_uint, sizeof
 
@@ -336,8 +337,8 @@ def dice_images(
                 # pad image
                 img_width = x - last_x
                 img_height = y - last_y
-                pad_x = 2560 - img_width
-                pad_y = 1600 - img_height
+                pad_x = printer.width - img_width
+                pad_y = printer.height - img_height
                 sub_img = np.pad(
                     sub_img,
                     (

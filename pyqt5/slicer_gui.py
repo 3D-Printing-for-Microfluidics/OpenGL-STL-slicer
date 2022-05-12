@@ -1,7 +1,9 @@
 import os
 import PySimpleGUI as sg
+from printer import printer
 from app_qt import generate_slices, dice_images
 
+default_overlap = 15
 
 # set up frontend GUI
 
@@ -25,7 +27,16 @@ layout = [
     [
         sg.Text("Image Width (px)", key="width_txt", visible=False, size=(16, 1)),
         sg.Column(
-            [[sg.Combo([2560], default_value=2560, key="width", visible=False)]],
+            [
+                [
+                    sg.Combo(
+                        [printer.width],
+                        default_value=printer.width,
+                        key="width",
+                        visible=False,
+                    )
+                ]
+            ],
             element_justification="right",
         ),
     ],
@@ -34,7 +45,12 @@ layout = [
         sg.Column(
             [
                 [
-                    sg.Combo([1600], default_value=1600, key="height", visible=False),
+                    sg.Combo(
+                        [printer.height],
+                        default_value=printer.height,
+                        key="height",
+                        visible=False,
+                    ),
                 ]
             ],
             element_justification="right",
@@ -59,7 +75,9 @@ layout = [
         sg.Column(
             [
                 [
-                    sg.InputText(default_text=15, key="overlap", visible=False),
+                    sg.InputText(
+                        default_text=default_overlap, key="overlap", visible=False
+                    ),
                 ]
             ],
             element_justification="right",
@@ -70,7 +88,11 @@ layout = [
         sg.Column(
             [
                 [
-                    sg.InputText(default_text="2560,5105", key="xb", visible=False),
+                    sg.InputText(
+                        default_text=f"{printer.width},{printer.width*2 - default_overlap}",
+                        key="xb",
+                        visible=False,
+                    ),
                 ]
             ],
             element_justification="right",
@@ -81,7 +103,11 @@ layout = [
         sg.Column(
             [
                 [
-                    sg.InputText(default_text="1600,3185", key="yb", visible=False),
+                    sg.InputText(
+                        default_text=f"{printer.height},{printer.height*2 - default_overlap}",
+                        key="yb",
+                        visible=False,
+                    ),
                 ]
             ],
             element_justification="right",
@@ -120,7 +146,7 @@ while True:
                         img_width = x - xs[-1]
                     else:
                         img_width = x - (xs[-1] - overlap)
-                    if img_width <= 2560:
+                    if img_width <= printer.width:
                         xs.append(x)
                     else:
                         invalid = True
@@ -130,14 +156,16 @@ while True:
                 img_width = width - xs[-1]
             else:
                 img_width = width - (xs[-1] - overlap)
-            if img_width <= 2560:
+            if img_width <= printer.width:
                 xs.append(width)
             else:
                 invalid = True
             x_boundries = xs
 
             if invalid:
-                sg.popup("X boundries will result in image width greater than 2560")
+                sg.popup(
+                    f"X boundries will result in image width greater than {printer.width}"
+                )
                 continue
 
             ys = [0]
@@ -148,7 +176,7 @@ while True:
                         img_height = y - ys[-1]
                     else:
                         img_height = y - (ys[-1] - overlap)
-                    if img_height <= 1600:
+                    if img_height <= printer.height:
                         ys.append(y)
                     else:
                         invalid = True
@@ -158,14 +186,16 @@ while True:
                 img_height = height - ys[-1]
             else:
                 img_height = height - (ys[-1] - overlap)
-            if img_height <= 1600:
+            if img_height <= printer.height:
                 ys.append(height)
             else:
                 invalid = True
             y_boundries = ys
 
             if invalid:
-                sg.popup("Y boundries will result in image height greater than 1600")
+                sg.popup(
+                    f"Y boundries will result in image height greater than {printer.height}"
+                )
                 continue
 
         # create the print file and then exit
