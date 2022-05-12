@@ -106,6 +106,67 @@ while True:
         height = float(values["height"])
         pixel_pitch_um = float(values["pitch"])
         path_to_stl = os.path.normpath(values["path"])
+        x_boundries = [int(i) for i in values["xb"].split(",")]
+        y_boundries = [int(i) for i in values["yb"].split(",")]
+        overlap = int(values["overlap"])
+
+        # check if stitching boundries are valid
+        if bool(values["stitched"]):
+            xs = [0]
+            invalid = False
+            for x in x_boundries:
+                if x < width:
+                    if xs[-1] == 0:
+                        img_width = x - xs[-1]
+                    else:
+                        img_width = x - (xs[-1] - overlap)
+                    if img_width <= 2560:
+                        xs.append(x)
+                    else:
+                        invalid = True
+                else:
+                    break
+            if xs[-1] == 0:
+                img_width = width - xs[-1]
+            else:
+                img_width = width - (xs[-1] - overlap)
+            if img_width <= 2560:
+                xs.append(width)
+            else:
+                invalid = True
+            x_boundries = xs
+
+            if invalid:
+                sg.popup("X boundries will result in image width greater than 2560")
+                continue
+
+            ys = [0]
+            invalid = False
+            for y in y_boundries:
+                if y < height:
+                    if ys[-1] == 0:
+                        img_height = y - ys[-1]
+                    else:
+                        img_height = y - (ys[-1] - overlap)
+                    if img_height <= 1600:
+                        ys.append(y)
+                    else:
+                        invalid = True
+                else:
+                    break
+            if ys[-1] == 0:
+                img_height = height - ys[-1]
+            else:
+                img_height = height - (ys[-1] - overlap)
+            if img_height <= 1600:
+                ys.append(height)
+            else:
+                invalid = True
+            y_boundries = ys
+
+            if invalid:
+                sg.popup("Y boundries will result in image height greater than 1600")
+                continue
 
         # create the print file and then exit
         output_folder = generate_slices(
@@ -118,9 +179,6 @@ while True:
         )
 
         if bool(values["stitched"]):
-            x_boundries = [int(i) for i in values["xb"].split(",")]
-            y_boundries = [int(i) for i in values["yb"].split(",")]
-            overlap = int(values["overlap"])
             dice_images(
                 output_folder,
                 width,

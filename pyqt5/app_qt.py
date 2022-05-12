@@ -305,18 +305,6 @@ def dice_images(
     progress_handle=None,
 ):
 
-    xs = []
-    for x in x_boundries:
-        if x < imageWidth:
-            xs.append(x)
-    xs.append(imageWidth)
-
-    ys = []
-    for y in y_boundries:
-        if y < imageHeight:
-            ys.append(y)
-    ys.append(imageHeight)
-
     dicedSavePath = Path(sliceSavePath) / "diced_images"
     fullSavePath = Path(sliceSavePath) / "full_sized_images"
 
@@ -334,11 +322,15 @@ def dice_images(
         img = np.array(Image.open(image_path))
 
         last_x = 0
-        for j, x in enumerate(xs):
+        for j, x in enumerate(x_boundries):
             x = int(x)
+            if x == 0:
+                continue
             last_y = 0
-            for k, y in enumerate(ys):
+            for k, y in enumerate(y_boundries):
                 y = int(y)
+                if y == 0:
+                    continue
                 sub_img = img[last_y:y, last_x:x]
                 sub_img = Image.fromarray(sub_img).convert("L")
                 sub_img.save(dicedSavePath / f"{filename}_stitch_x{j}_y{k}{extention}")
@@ -350,12 +342,10 @@ def dice_images(
             progress_handle("Dicing images", i + 1, image_count)
 
     with open(sliceSavePath / "stitching_info.json", "w") as file:
-        xs.insert(0, 0)
-        ys.insert(0, 0)
         info = {
             "pixel_pitch": pixelPitch,
-            "x_boundries": xs,
-            "y_boundries": ys,
+            "x_boundries": x_boundries,
+            "y_boundries": y_boundries,
             "overlap": overlap,
         }
         json.dump(info, file)
