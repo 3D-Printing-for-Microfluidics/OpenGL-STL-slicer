@@ -1,6 +1,6 @@
 import os
 import PySimpleGUI as sg
-from app_qt import generate_slices
+from app_qt import generate_slices, dice_images
 
 
 # set up frontend GUI
@@ -53,10 +53,47 @@ layout = [
             element_justification="right",
         ),
     ],
+    [sg.Checkbox("Create stitched images", key="stitched", visible=False)],
+    [
+        sg.Text("Overlap (px)", key="overlap_txt", visible=False, size=(16, 1)),
+        sg.Column(
+            [
+                [
+                    sg.InputText(default_text=15, key="overlap", visible=False),
+                ]
+            ],
+            element_justification="right",
+        ),
+    ],
+    [
+        sg.Text("X Boundries (px)", key="xb_txt", visible=False, size=(16, 1)),
+        sg.Column(
+            [
+                [
+                    sg.InputText(default_text="2560,5105", key="xb", visible=False),
+                ]
+            ],
+            element_justification="right",
+        ),
+    ],
+    [
+        sg.Text("Y Boundries (px)", key="yb_txt", visible=False, size=(16, 1)),
+        sg.Column(
+            [
+                [
+                    sg.InputText(default_text="1600,3185", key="yb", visible=False),
+                ]
+            ],
+            element_justification="right",
+        ),
+    ],
     [sg.Submit(), sg.Cancel()],
 ]
 window = sg.Window("Python STL Slicer", layout)
 
+
+def progress_handle(title, progress, total):
+    sg.one_line_progress_meter(title, progress, total, "key")
 
 
 while True:
@@ -80,6 +117,21 @@ while True:
             progress_handle,
         )
 
+        if bool(values["stitched"]):
+            x_boundries = [int(i) for i in values["xb"].split(",")]
+            y_boundries = [int(i) for i in values["yb"].split(",")]
+            overlap = int(values["overlap"])
+            dice_images(
+                output_folder,
+                width,
+                height,
+                pixel_pitch_um,
+                x_boundries,
+                y_boundries,
+                overlap,
+                progress_handle,
+            )
+
         sg.popup("Slices saved to", output_folder, title="Slicing Complete")
 
         window.close()
@@ -87,8 +139,15 @@ while True:
         window.Element("width").Update(visible=values["adv_opts"])
         window.Element("height").Update(visible=values["adv_opts"])
         window.Element("pitch").Update(visible=values["adv_opts"])
+        window.Element("stitched").Update(visible=values["adv_opts"])
+        window.Element("overlap").Update(visible=values["adv_opts"])
+        window.Element("xb").Update(visible=values["adv_opts"])
+        window.Element("yb").Update(visible=values["adv_opts"])
         window.Element("width_txt").Update(visible=values["adv_opts"])
         window.Element("height_txt").Update(visible=values["adv_opts"])
         window.Element("pitch_txt").Update(visible=values["adv_opts"])
+        window.Element("overlap_txt").Update(visible=values["adv_opts"])
+        window.Element("xb_txt").Update(visible=values["adv_opts"])
+        window.Element("yb_txt").Update(visible=values["adv_opts"])
     elif event == "Cancel" or event is None:
         exit()

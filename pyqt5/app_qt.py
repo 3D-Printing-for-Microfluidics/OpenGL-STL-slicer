@@ -1,6 +1,9 @@
 import sys
+import glob
+import json
 import numpy as np
 from stl import mesh
+from PIL import Image
 from pathlib import Path
 from PyQt5 import QtGui, QtCore, QtWidgets
 from ctypes import c_float, c_uint, sizeof
@@ -22,6 +25,7 @@ class Window(QtGui.QOpenGLWindow):
         imageHeight,
         pixelPitch,
         sliceSavePath,
+        progress_handle,
         *args,
         **kwargs,
     ):
@@ -44,6 +48,7 @@ class Window(QtGui.QOpenGLWindow):
         self.imageHeight = imageHeight
         self.pixelPitch = pixelPitch
         self.sliceSavePath = sliceSavePath
+        self.progress_handle = progress_handle
 
     def initializeGL(self):
         self.gl = self.context().versionFunctions()
@@ -164,6 +169,12 @@ class Window(QtGui.QOpenGLWindow):
             self.draw()
             self.renderSlice()
             self.update()
+            if self.progress_handle is not None:
+                self.progress_handle(
+                    "Slicing STL",
+                    self.currentLayer,
+                    self.totalThickness // self.layerThickness + 1,
+                )
 
     def draw(self):
         self.gl.glViewport(0, 0, self.size().width(), self.size().height())
@@ -242,7 +253,7 @@ class Window(QtGui.QOpenGLWindow):
 
 
 def generate_slices(
-    stlFilename, layerThickness, imageWidth, imageHeight, pixelPitch
+    stlFilename, layerThickness, imageWidth, imageHeight, pixelPitch, progress_handle=None
 ):
     stlParentFolder = Path(stlFilename).parent
     sliceSavePath = Path(stlParentFolder) / "slices"
@@ -270,6 +281,7 @@ def generate_slices(
         imageHeight,
         pixelPitch,
         sliceSavePath,
+        progress_handle,
     )
     SCR_WIDTH = 640
     SCR_HEIGHT = int(SCR_WIDTH * imageHeight / imageWidth)
@@ -280,6 +292,73 @@ def generate_slices(
 
     # return sliceSavePath, sys.exit(app.exec_())
     return sliceSavePath
+
+
+def dice_images(
+    sliceSavePath,
+    imageWidth,
+    imageHeight,
+    pixelPitch,
+    x_boundries,
+    y_boundries,
+    overlap,
+    progress_handle=None,
+):
+
+    xs = []
+    for x in x_boundries:
+        if x < imageWidth:
+            xs.append(x)
+    xs.append(imageWidth)
+
+    ys = []
+    for y in y_boundries:
+        if y < imageHeight:
+            ys.append(y)
+    ys.append(imageHeight)
+
+    dicedSavePath = Path(sliceSavePath) / "diced_images"
+    fullSavePath = Path(sliceSavePath) / "full_sized_images"
+
+    if not Path(dicedSavePath).exists():
+        Path(dicedSavePath).mkdir()
+    if not Path(fullSavePath).exists():
+        Path(fullSavePath).mkdir()
+
+    images = glob.glob(str(sliceSavePath / "*.png"))
+    image_count = len(images)
+    for i, image_path in enumerate(images):
+        image_path = Path(image_path)
+        filename = image_path.stem
+        extention = image_path.suffix
+        img = np.array(Image.open(image_path))
+
+        last_x = 0
+        for j, x in enumerate(xs):
+            x = int(x)
+            last_y = 0
+            for k, y in enumerate(ys):
+                y = int(y)
+                sub_img = img[last_y:y, last_x:x]
+                sub_img = Image.fromarray(sub_img).convert("L")
+                sub_img.save(dicedSavePath / f"{filename}_stitch_x{j}_y{k}{extention}")
+                last_y = y - overlap
+            last_x = x - overlap
+
+        image_path.replace(fullSavePath / f"{filename}{extention}")
+        if progress_handle is not None:
+            progress_handle("Dicing images", i + 1, image_count)
+
+    with open(sliceSavePath / "stitching_info.json", "w") as file:
+        xs.insert(0, 0)
+        ys.insert(0, 0)
+        info = {
+            "pixel_pitch": pixelPitch,
+            "x_boundries": xs,
+            "y_boundries": ys,
+            "overlap": overlap,
+        }
+        json.dump(info, file)
 
 
 if __name__ == "__main__":
