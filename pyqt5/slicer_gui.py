@@ -119,7 +119,11 @@ window = sg.Window("Python STL Slicer", layout)
 
 
 def progress_handle(title, progress, total):
-    sg.one_line_progress_meter(title, progress, total, "key")
+    try:
+        sg.one_line_progress_meter(title, progress, total, "key")
+    except:
+        pass
+
 
 
 while True:
