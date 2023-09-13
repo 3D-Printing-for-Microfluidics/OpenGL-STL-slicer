@@ -81,7 +81,7 @@ class Window(QtGui.QOpenGLWindow):
         self.model.setToIdentity()
         self.model.translate(0, 0, self.totalThickness + EPSILON)
 
-        self.sliceFbo = QtGui.QOpenGLFramebufferObject(self.imageWidth, self.imageHeight)
+        self.sliceFbo = QtGui.QOpenGLFramebufferObject(int(self.imageWidth), int(self.imageHeight))
         self.sliceFbo.setAttachment(QtGui.QOpenGLFramebufferObject.CombinedDepthStencil)
 
     def loadMesh(self):
